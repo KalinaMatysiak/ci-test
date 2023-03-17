@@ -1,0 +1,297 @@
+#!/usr/bin/env bash
+
+function gitCommit() {
+    git add .
+    git commit -m "$@"
+}
+
+function gitPush() {
+    gitCommit "$@"
+    git push
+}
+
+function gitPushToTestFirstTime() {
+    git push --set-upstream origin "$@"
+}
+
+function createTestBranch() {
+    git checkout -b "$@"
+}
+
+function goToBranch() {
+    git checkout "$@"
+}
+
+function goToMainBranch() {
+    git checkout main
+}
+
+function mergeMain() {
+    git merge main
+}
+
+function appendDockerFile() {
+    echo "$@" >>src/fake/Dockerfile
+}
+
+function appendDockerFile2() {
+    echo "$@" >>src/fake/Dockerfile2
+}
+
+function appendOtherFile() {
+    echo "otherFile" >>otherFile.js
+}
+
+function deleteBranch() {
+    git branch -D "$@"
+    git push origin --delete "$@"
+}
+
+function squashMerge() {
+    git pull
+    git merge --squash "$@"
+    git push
+    deleteBranch "$@"
+}
+
+# --- Use cases ---#
+
+function case1() {
+    appendDockerFile "CASE 1"
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    gitPush "CASE 1: Commit Dockerfile"
+
+    LAST_COMMIT=$(git rev-parse HEAD)
+    EXPECTED_SHA=$LAST_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
+
+    gitPush "CASE 1: Commit other file"
+}
+
+function case2() {
+    appendDockerFile "CASE 2"
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    gitPush "CASE 2: Commit Dockerfile"
+
+    LAST_COMMIT=$(git rev-parse HEAD)
+    EXPECTED_SHA=$LAST_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    appendOtherFile
+    gitPush "CASE 2: Commit other file"
+
+    createTestBranch test2
+    EXPECTED_SHA=$LAST_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    appendOtherFile
+    gitCommit "CASE 2: Commit other file on a different branch"
+    gitPushToTestFirstTime test2
+
+    goToMainBranch
+    deleteBranch test2
+}
+
+function case3() {
+    appendDockerFile "CASE 3"
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    gitPush "CASE 3: Commit Dockerfile"
+
+    LAST_COMMIT=$(git rev-parse HEAD)
+    createTestBranch test3
+    EXPECTED_SHA=$LAST_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    appendOtherFile
+    gitCommit "CASE 3: Commit other file on a different branch"
+    gitPushToTestFirstTime test3
+
+    goToMainBranch
+    appendDockerFile "CASE 3"
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    gitPush "CASE 3: Commit Dockerfile"
+
+    NEW_LAST_COMMIT=$(git rev-parse HEAD)
+    goToBranch test3
+    mergeMain
+    EXPECTED_SHA=$NEW_LAST_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
+
+    EXPECTED_SHA=$NEW_LAST_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    appendOtherFile
+    gitPush "CASE 3: Commit other file on a different branch"
+
+    goToMainBranch
+    deleteBranch test3
+}
+
+function case4() {
+    appendDockerFile "CASE 4"
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    gitPush "CASE 4: Commit Dockerfile"
+    LAST_MAIN_COMMIT=$(git rev-parse HEAD)
+
+    createTestBranch test4
+    appendDockerFile "CASE 4"
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    gitCommit "CASE 4: Commit Dockerfile on a different branch"
+    gitPushToTestFirstTime test4
+    LAST_OTHER_BRANCH_COMMIT=$(git rev-parse HEAD)
+
+    EXPECTED_SHA=$LAST_OTHER_BRANCH_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    appendOtherFile
+    gitPush "CASE 4: Commit other file on a different branch"
+
+    goToMainBranch
+
+    EXPECTED_SHA=$LAST_MAIN_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    appendOtherFile
+    gitPush "CASE 4: Commit other file"
+
+    deleteBranch test4
+}
+
+function case5() {
+    appendDockerFile "CASE 5"
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    gitPush "CASE 5: Commit Dockerfile"
+
+    createTestBranch test5
+    appendDockerFile2 "CASE 5"
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    gitCommit "CASE 5: Commit Dockerfile2"
+    gitPushToTestFirstTime test5
+
+    goToMainBranch
+
+    appendDockerFile "CASE 5"
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    gitPush "CASE 5: Commit Dockerfile"
+    LAST_MAIN_COMMIT=$(git rev-parse HEAD)
+
+    EXPECTED_SHA=$LAST_MAIN_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    appendOtherFile
+    gitPush "CASE 5: Commit other file"
+
+    goToBranch test5
+    mergeMain
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    LAST_TEST_COMMIT=$(git rev-parse HEAD)
+
+    EXPECTED_SHA=$LAST_TEST_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    appendOtherFile
+    gitPush "CASE 5: Commit other file on a different branch"
+
+    goToMainBranch
+    deleteBranch test5
+}
+
+function case6() {
+    appendDockerFile "CASE 6"
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    gitPush "CASE 6: Commit Dockerfile"
+    LAST_MAIN_COMMIT=$(git rev-parse HEAD)
+
+    EXPECTED_SHA=$LAST_MAIN_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    appendOtherFile
+    gitPush "CASE 6: Commit other file"
+
+    createTestBranch test6
+
+    appendOtherFile
+    EXPECTED_SHA=$LAST_MAIN_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    gitCommit "CASE 6: Commit other file on a different branch"
+    gitPushToTestFirstTime test6
+
+    goToMainBranch
+    appendDockerFile "CASE 6"
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    gitPush "CASE 6: Commit Dockerfile"
+
+    goToBranch test6
+    appendDockerFile2 "CASE 6"
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    gitPush "CASE 6: Commit Dockerfile2 on a different branch"
+
+    goToBranch test6
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    git rebase main
+    git push --force-with-lease
+
+    goToMainBranch
+    deleteBranch test6
+}
+
+function case7() {
+    appendDockerFile "CASE 7"
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    gitPush "CASE 7: Commit Dockerfile"
+    LAST_MAIN_COMMIT=$(git rev-parse HEAD)
+
+    EXPECTED_SHA=$LAST_MAIN_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    appendOtherFile
+    gitPush "CASE 7: Commit other file"
+
+    createTestBranch test7_first
+
+    appendDockerFile "CASE 7"
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    gitCommit "CASE 7: Commit Dockerfile on a different branch"
+    gitPushToTestFirstTime test7_first
+
+    goToMainBranch
+
+    EXPECTED_SHA=$LAST_MAIN_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    appendOtherFile
+    gitPush "CASE 7: Commit other file"
+
+    createTestBranch test7_second
+
+    appendDockerFile2 "CASE 7"
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    gitCommit "CASE 5: Commit Dockerfile2 on a different branch"
+    gitPushToTestFirstTime test7_second
+
+    goToBranch test7_first
+
+    appendDockerFile "CASE 7"
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    gitPush "CASE 7: Commit Dockerfile on a different branch"
+
+    goToMainBranch
+    squashMerge test7_first
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+
+    squashMerge test7_second
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+}
+
+function case8() {
+    appendDockerFile "CASE 8"
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    gitPush "CASE 8: Commit Dockerfile"
+    LAST_MAIN_COMMIT=$(git rev-parse HEAD)
+
+    EXPECTED_SHA=$LAST_MAIN_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    appendOtherFile
+    gitPush "CASE 8: Commit other file"
+
+    createTestBranch test8
+    appendDockerFile "CASE 8"
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    gitCommit "CASE 8: Commit Dockerfile"
+    gitPushToTestFirstTime test8
+    LAST_COMMIT_ON_BRANCH=$(git rev-parse HEAD)
+
+    createTestBranch test8Plus
+
+    appendOtherFile
+    EXPECTED_SHA=$LAST_COMMIT_ON_BRANCH envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    gitCommit "CASE 8: Commit other file on a different branch (created from diffrent branch)"
+    gitPushToTestFirstTime test8Plus
+
+    goToMainBranch
+    deleteBranch test8
+    deleteBranch test8Plus
+}
+
+# case1
+# case2
+# case3
+# case4
+# case5
+case6
+# case7
+# case8
