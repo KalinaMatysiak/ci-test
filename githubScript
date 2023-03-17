@@ -241,7 +241,7 @@ function case7() {
 
     appendDockerFile2 "CASE 7"
     EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
-    gitCommit "CASE 5: Commit Dockerfile2 on a different branch"
+    gitCommit "CASE 7: Commit Dockerfile2 on a different branch"
     gitPushToTestFirstTime test7_second
 
     goToBranch test7_first
@@ -293,5 +293,5 @@ function case8() {
 # case4
 # case5
 # case6
-case7
-# case8
+# case7
+case8
