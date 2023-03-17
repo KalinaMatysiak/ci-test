@@ -287,9 +287,9 @@ function case8() {
     deleteBranch test8Plus
 }
 
-case1
-# case2
-# case3
+# case1
+case2
+case3
 # case4
 # case5
 # case6
