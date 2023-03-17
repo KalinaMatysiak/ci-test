@@ -12,7 +12,8 @@ jobs:
     - name: changed_files
       run: |
         docker=$(git --no-pager log -1 --format=format:%H -- src/fake/)
+
         expect=current
 
 
-        EXPECTED_SHA= DOCKER_IMAGE_SHA= node test.js
+        EXPECTED_SHA=current DOCKER_IMAGE_SHA=$(git --no-pager log -1 --format=format:%H -- src/fake/) node test.js

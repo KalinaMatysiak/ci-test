@@ -63,7 +63,7 @@ function case1() {
 
     LAST_COMMIT=$(git rev-parse HEAD)
     EXPECTED_SHA=$LAST_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
-
+    appendOtherFile
     gitPush "CASE 1: Commit other file"
 }
 
