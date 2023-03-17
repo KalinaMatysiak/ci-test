@@ -16,4 +16,4 @@ jobs:
         expect=current
 
 
-        EXPECTED_SHA=current DOCKER_IMAGE_SHA=$(git --no-pager log -2 --format=format:%H -- src/fake/) node test.js
+        EXPECTED_SHA=current DOCKER_IMAGE_SHA=$(git --no-pager log -1 --format=format:%H -- src/fake/) node test.js
