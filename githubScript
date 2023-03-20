@@ -314,6 +314,10 @@ function case9() {
     -d '{"title":"Test CASE 9","body":"Please pull these awesome changes in!","head":"test9","base":"main"}'
     EXPECTED_SHA=$LAST_OTHER_BRANCH_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
     
+    EXPECTED_SHA=$LAST_OTHER_BRANCH_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    appendOtherFile
+    gitPush "CASE 9: Commit other file on a different branch"
+
     goToMainBranch
 
     squashMerge test9
