@@ -10,4 +10,4 @@ jobs:
       with:
         fetch-depth: 0
     - name: changed_files
-      run: EXPECTED_SHA=current DOCKER_IMAGE_SHA=$(git --no-pager log -1 --format=format:%H -- src/fake/) node test.js
+      run: EXPECTED_SHA=f2c3258b22ee4a9a95fc790f7fba0937468f6a5d DOCKER_IMAGE_SHA=$(git --no-pager log -1 --format=format:%H -- src/fake/) node test.js
