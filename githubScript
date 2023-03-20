@@ -61,7 +61,7 @@ function case1() {
     EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
     gitPush "CASE 1: Commit Dockerfile"
 
-    LAST_COMMIT=$(git rev-parse HEAD)
+    LAST_COMMIT=$(git rev-parse --short HEAD)
     EXPECTED_SHA=$LAST_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
     appendOtherFile
     gitPush "CASE 1: Commit other file"
@@ -72,7 +72,7 @@ function case2() {
     EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
     gitPush "CASE 2: Commit Dockerfile"
 
-    LAST_COMMIT=$(git rev-parse HEAD)
+    LAST_COMMIT=$(git rev-parse --short HEAD)
     EXPECTED_SHA=$LAST_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
     appendOtherFile
     gitPush "CASE 2: Commit other file"
@@ -92,7 +92,7 @@ function case3() {
     EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
     gitPush "CASE 3: Commit Dockerfile"
 
-    LAST_COMMIT=$(git rev-parse HEAD)
+    LAST_COMMIT=$(git rev-parse --short HEAD)
     createTestBranch test3
     EXPECTED_SHA=$LAST_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
     appendOtherFile
@@ -104,7 +104,7 @@ function case3() {
     EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
     gitPush "CASE 3: Commit Dockerfile"
 
-    NEW_LAST_COMMIT=$(git rev-parse HEAD)
+    NEW_LAST_COMMIT=$(git rev-parse --short HEAD)
     goToBranch test3
     mergeMain
     EXPECTED_SHA=$NEW_LAST_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
@@ -121,14 +121,14 @@ function case4() {
     appendDockerFile "CASE 4"
     EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
     gitPush "CASE 4: Commit Dockerfile"
-    LAST_MAIN_COMMIT=$(git rev-parse HEAD)
+    LAST_MAIN_COMMIT=$(git rev-parse --short HEAD)
 
     createTestBranch test4
     appendDockerFile "CASE 4"
     EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
     gitCommit "CASE 4: Commit Dockerfile on a different branch"
     gitPushToTestFirstTime test4
-    LAST_OTHER_BRANCH_COMMIT=$(git rev-parse HEAD)
+    LAST_OTHER_BRANCH_COMMIT=$(git rev-parse --short HEAD)
 
     EXPECTED_SHA=$LAST_OTHER_BRANCH_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
     appendOtherFile
@@ -159,7 +159,7 @@ function case5() {
     appendDockerFile "CASE 5"
     EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
     gitPush "CASE 5: Commit Dockerfile"
-    LAST_MAIN_COMMIT=$(git rev-parse HEAD)
+    LAST_MAIN_COMMIT=$(git rev-parse --short HEAD)
 
     EXPECTED_SHA=$LAST_MAIN_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
     appendOtherFile
@@ -168,7 +168,7 @@ function case5() {
     goToBranch test5
     mergeMain
     EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
-    LAST_TEST_COMMIT=$(git rev-parse HEAD)
+    LAST_TEST_COMMIT=$(git rev-parse --short HEAD)
 
     EXPECTED_SHA=$LAST_TEST_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
     appendOtherFile
@@ -182,7 +182,7 @@ function case6() {
     appendDockerFile "CASE 6"
     EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
     gitPush "CASE 6: Commit Dockerfile"
-    LAST_MAIN_COMMIT=$(git rev-parse HEAD)
+    LAST_MAIN_COMMIT=$(git rev-parse --short HEAD)
 
     EXPECTED_SHA=$LAST_MAIN_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
     appendOtherFile
@@ -218,7 +218,7 @@ function case7() {
     appendDockerFile "CASE 7"
     EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
     gitPush "CASE 7: Commit Dockerfile"
-    LAST_MAIN_COMMIT=$(git rev-parse HEAD)
+    LAST_MAIN_COMMIT=$(git rev-parse --short HEAD)
 
     EXPECTED_SHA=$LAST_MAIN_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
     appendOtherFile
@@ -262,7 +262,7 @@ function case8() {
     appendDockerFile "CASE 8"
     EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
     gitPush "CASE 8: Commit Dockerfile"
-    LAST_MAIN_COMMIT=$(git rev-parse HEAD)
+    LAST_MAIN_COMMIT=$(git rev-parse --short HEAD)
 
     EXPECTED_SHA=$LAST_MAIN_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
     appendOtherFile
@@ -273,7 +273,7 @@ function case8() {
     EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
     gitCommit "CASE 8: Commit Dockerfile"
     gitPushToTestFirstTime test8
-    LAST_COMMIT_ON_BRANCH=$(git rev-parse HEAD)
+    LAST_COMMIT_ON_BRANCH=$(git rev-parse --short HEAD)
 
     createTestBranch test8Plus
 
@@ -292,14 +292,14 @@ function case9() {
     appendDockerFile "CASE 9"
     EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
     gitPush "CASE 9: Commit Dockerfile"
-    LAST_MAIN_COMMIT=$(git rev-parse HEAD)
+    LAST_MAIN_COMMIT=$(git rev-parse --short HEAD)
 
     createTestBranch test9
     appendDockerFile "CASE 9"
     EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
     gitCommit "CASE 9: Commit Dockerfile on a different branch"
     gitPushToTestFirstTime test9
-    LAST_OTHER_BRANCH_COMMIT=$(git rev-parse HEAD)
+    LAST_OTHER_BRANCH_COMMIT=$(git rev-parse --short HEAD)
 
     EXPECTED_SHA=$LAST_OTHER_BRANCH_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
     appendOtherFile
@@ -324,12 +324,12 @@ function case9() {
     EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
 }
 
-# case1
-# case2
-# case3
-# case4
-# case5
-# case6
-# case7
-# case8
+case1
+case2
+case3
+case4
+case5
+case6
+case7
+case8
 # case9
