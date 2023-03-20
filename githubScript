@@ -287,6 +287,39 @@ function case8() {
     deleteBranch test8Plus
 }
 
+# case with pull request
+function case9() {
+    appendDockerFile "CASE 9"
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    gitPush "CASE 9: Commit Dockerfile"
+    LAST_MAIN_COMMIT=$(git rev-parse HEAD)
+
+    createTestBranch test9
+    appendDockerFile "CASE 9"
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    gitCommit "CASE 9: Commit Dockerfile on a different branch"
+    gitPushToTestFirstTime test9
+    LAST_OTHER_BRANCH_COMMIT=$(git rev-parse HEAD)
+
+    EXPECTED_SHA=$LAST_OTHER_BRANCH_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    appendOtherFile
+    gitPush "CASE 9: Commit other file on a different branch"
+
+    curl -L \
+    -X POST \
+    -H "Accept: application/vnd.github+json" \
+    -H "Authorization: Bearer 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"\
+    -H "X-GitHub-Api-Version: 2022-11-28" \
+    https://api.github.com/repos/KalinaMatysiak/ci-test/pulls \
+    -d '{"title":"Test CASE 9","body":"Please pull these awesome changes in!","head":"test9","base":"main"}'
+    EXPECTED_SHA=$LAST_OTHER_BRANCH_COMMIT envsubst <github-actions.tpl >.github/workflows/ci.yaml
+    
+    goToMainBranch
+
+    squashMerge test9
+    EXPECTED_SHA=current envsubst <github-actions.tpl >.github/workflows/ci.yaml
+}
+
 # case1
 # case2
 # case3
@@ -294,4 +327,5 @@ function case8() {
 # case5
 # case6
 # case7
-case8
+# case8
+case9
