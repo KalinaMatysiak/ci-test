@@ -17,9 +17,9 @@ async function runCommand(command) {
 
 const assertsDockerImageRef = async (expectedSha, dockerImageSha) => {
   console.log(`Comparing ${expectedSha} to ${dockerImageSha}`);
-  throw new Error('yo mama123')
-  const currentSha = await runCommand("git rev-parse --short HEAD");
+  
   if (expectedSha === "current") {
+    const currentSha = await runCommand("git rev-parse --short HEAD");
     if (currentSha.trim() !== dockerImageSha) {
       throw new Error(
         `Wrong SHA - expected values ${dockerImageSha} but got ${currentSha}`
@@ -30,7 +30,7 @@ const assertsDockerImageRef = async (expectedSha, dockerImageSha) => {
 
   if (expectedSha !== dockerImageSha) {
     throw new Error(
-      `Wrong SHA - expected values ${expectedSha} but got ${currentSha}`
+      `Wrong SHA - expected values ${expectedSha} but got ${dockerImageSha}`
     );
   }
   return true;
