@@ -17,6 +17,7 @@ async function runCommand(command) {
 
 const assertsDockerImageRef = async (expectedSha, dockerImageSha) => {
   console.log(`Comparing ${expectedSha} to ${dockerImageSha}`);
+  throw new Error('yo mama123')
   const currentSha = await runCommand("git rev-parse --short HEAD");
   if (expectedSha === "current") {
     if (currentSha.trim() !== dockerImageSha) {
