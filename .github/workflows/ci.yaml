@@ -13,10 +13,10 @@ jobs:
       run: |
         CHANGES=$(git --no-pager log -1 --format=format:%H  HEAD^..HEAD --name-only -- test.yaml | head -n1)
         echo $CHANGES
+        x=$(git rev-parse HEAD)
+        echo "commit sha" $x
 
-        echo "commit sha" ${{ github.event.workflow_run.head_sha }}
-
-        if [ "${CHANGES}" == ${{ github.event.workflow_run.head_sha }}  ]; then
+        if [ "${CHANGES}" == "${x}"  ]; then
           echo "true"
         else
           echo "false"
