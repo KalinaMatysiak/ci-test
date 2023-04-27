@@ -5,6 +5,8 @@ on:
 jobs: 
   what_changed_images:
     runs-on: ubuntu-latest
+    env:
+      BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
     steps:
     - uses: actions/checkout@v3
       with:
@@ -21,6 +23,8 @@ jobs:
         else
           echo "false"
         fi
+    - name: changed_files
+      run: node test.js
     - name: changed_files
       run: EXPECTED_SHA=f785e30 DOCKER_IMAGE_SHA=$(git --no-pager log -1 --format=format:%h -- src/fake/) node test.js
 

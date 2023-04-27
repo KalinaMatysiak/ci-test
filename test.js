@@ -16,6 +16,7 @@ async function runCommand(command) {
 }
 
 const assertsDockerImageRef = async (expectedSha, dockerImageSha) => {
+  console.log('BRANCH NAME', process.env.BRANCH_NAME)
   console.log(`Comparing ${expectedSha} to ${dockerImageSha}`);
   
   if (expectedSha === "current") {
